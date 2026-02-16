@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Buscador Global - ODH</title>
+  <style>
+    :root { 
+      --bg: #0b1220; 
+      --card: #111a2b; 
+      --ink: #e6eefc; 
+      --muted: #9db0d1; 
+      --accent: #3b82f6; 
+      --border: #1e2a44;
+    }
+
+    html, body { 
+      background: var(--bg); 
+      color: var(--ink); 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      margin: 0; 
+      overflow-x: hidden;
+    }
+
+    header { 
+      padding: 20px; 
+      background: linear-gradient(135deg, #1f2a44 0%, #13233a 100%); 
+      border-bottom: 1px solid var(--border); 
+    }
+
+    h1 { margin: 0; font-size: 22px; letter-spacing: 0.5px; }
+    .sub { color: var(--muted); font-size: 13px; margin-top: 5px; }
+
+    .container { padding: 20px; max-width: 100%; }
+
+    /* Buscador mejorado */
+    .search-section { 
+      background: var(--card); 
+      padding: 20px; 
+      border-radius: 12px; 
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    input#q { 
+      flex-grow: 1; 
+      background: #0b1527; 
+      border: 1px solid #2b3b5c; 
+      padding: 12px 15px; 
+      border-radius: 8px; 
+      color: white; 
+      font-size: 15px;
+    }
+
+    .btn { 
+      padding: 12px 24px; 
+      border-radius: 8px; 
+      border: none; 
+      cursor: pointer; 
+      font-weight: 600; 
+      transition: 0.2s;
+    }
+
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-secondary { background: #334155; color: white; }
+
+    /* Tabla Dinámica */
+    .table-wrapper { 
+      overflow-x: auto; 
+      border-radius: 10px; 
+      border: 1px solid var(--border); 
+      background: var(--card);
+    }
+
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      font-size: 12px; 
+      white-space: nowrap; /* Evita que el texto se amontone */
+    }
+
+    thead th { 
+      background: #1e293b; 
+      padding: 15px; 
+      text-align: left; 
+      color: white; 
+      text-transform: uppercase;
+      font-size: 11px;
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 0;
+    }
+
+    tbody td { 
+      padding: 12px 15px; 
+      border-bottom: 1px solid #17243f; 
+      color: var(--muted);
+    }
+
+    tbody tr:hover { background: #1e2944; }
+
+    .counter { 
+      display: inline-block; 
+      padding: 5px 15px; 
+      background: #1e2a44; 
+      border-radius: 20px; 
+      font-size: 12px; 
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Buscador Maestro de Beneficiarios</h1>
+    <p class="sub">Explorando todos los campos de la base de datos <strong>data_ben.json</strong></p>
+  </header>
+
+  <div class="container">
+    <div class="search-section">
+      <input id="q" type="text" placeholder="Escribe cualquier dato (ID, Nombre, Municipio, Aliado, Teléfono...)" />
+      <button class="btn btn-primary" onclick="ejecutarBusqueda()">BUSCAR</button>
+      <button class="btn btn-secondary" onclick="limpiar()">LIMPIAR</button>
+    </div>
+
+    <div id="meta" class="counter">Cargando datos...</div>
+
+    <div class="table-wrapper">
+      <table id="mainTable">
+        <thead id="theader"></thead>
+        <tbody id="tfooter"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let rawData = [];
+    let headers = [];
+
+    // Función para cargar los datos
+    async function cargarBD() {
+      try {
+        const respuesta = await fetch('data_ben.json');
+        rawData = await respuesta.json();
+        
+        if (rawData.length > 0) {
+          // Extraer todas las columnas posibles del primer objeto
+          headers = Object.keys(rawData[0]);
+          
+          construirCabecera();
+          mostrarResultados(rawData);
+          document.getElementById('meta').textContent = `${rawData.length} registros totales encontrados`;
+        }
+      } catch (error) {
+        document.getElementById('meta').textContent = "Error al cargar data_ben.json. Asegúrate de usar un servidor local.";
+        console.error(error);
+      }
+    }
+
+    // Crea las columnas dinámicamente
+    function construirCabecera() {
+      const headerRow = headers.map(h => `<th>${h.replace(/_/g, ' ')}</th>`).join('');
+      document.getElementById('theader').innerHTML = `<tr>${headerRow}</tr>`;
+    }
+
+    // Muestra las filas con todas sus celdas
+    function mostrarResultados(lista) {
+      const cuerpo = document.getElementById('tfooter');
+      if (lista.length === 0) {
+        cuerpo.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px;">Sin resultados</td></tr>`;
+        return;
+      }
+
+      const filasHtml = lista.map(item => {
+        const celdas = headers.map(col => {
+          let valor = item[col];
+          // Manejo de valores nulos o vacíos
+          if (valor === null || valor === undefined || valor === 0) {
+            if (typeof valor !== 'number') valor = "-";
+          }
+          return `<td>${valor}</td>`;
+        }).join('');
+        return `<tr>${celdas}</tr>`;
+      }).join('');
+
+      cuerpo.innerHTML = filasHtml;
+    }
+
+    // Buscador "Deep Search" en todas las columnas
+    function ejecutarBusqueda() {
+      const termino = document.getElementById('q').value.toLowerCase().trim();
+      
+      if (termino === "") {
+        mostrarResultados(rawData);
+        document.getElementById('meta').textContent = `${rawData.length} registros totales encontrados`;
+        return;
+      }
+
+      const filtrados = rawData.filter(fila => {
+        // Busca el término en cada uno de los valores de la fila
+        return Object.values(fila).some(valor => 
+          String(valor).toLowerCase().includes(termino)
+        );
+      });
+
+      mostrarResultados(filtrados);
+      document.getElementById('meta').textContent = `${filtrados.length} resultados encontrados para "${termino}"`;
+    }
+
+    function limpiar() {
+      document.getElementById('q').value = "";
+      ejecutarBusqueda();
+    }
+
+    // Permitir buscar al presionar Enter
+    document.getElementById('q').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') ejecutarBusqueda();
+    });
+
+    window.onload = cargarBD;
+  </script>
+</body>
+</html>
