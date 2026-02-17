@@ -26,14 +26,22 @@
       padding: 20px; 
       background: linear-gradient(135deg, #1f2a44 0%, #13233a 100%); 
       border-bottom: 1px solid var(--border); 
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* Estilo para la imagen del buscador */
+    .header-logo {
+      width: 60px; /* Ajusta el tamaño según necesites */
+      height: auto;
+      border-radius: 8px;
     }
 
     h1 { margin: 0; font-size: 22px; letter-spacing: 0.5px; }
-    .sub { color: var(--muted); font-size: 13px; margin-top: 5px; }
 
     .container { padding: 20px; max-width: 100%; }
 
-    /* Buscador mejorado */
     .search-section { 
       background: var(--card); 
       padding: 20px; 
@@ -68,7 +76,6 @@
     .btn-primary:hover { background: #2563eb; }
     .btn-secondary { background: #334155; color: white; }
 
-    /* Tabla Dinámica */
     .table-wrapper { 
       overflow-x: auto; 
       border-radius: 10px; 
@@ -80,7 +87,7 @@
       width: 100%; 
       border-collapse: collapse; 
       font-size: 12px; 
-      white-space: nowrap; /* Evita que el texto se amontone */
+      white-space: nowrap; 
     }
 
     thead th { 
@@ -117,8 +124,8 @@
 <body>
 
   <header>
+    <img src="buscador.png" alt="Buscador" class="header-logo">
     <h1>Buscador Maestro de Beneficiarios</h1>
-    <p class="sub">Explorando todos los campos de la base de datos <strong>data_ben.json</strong></p>
   </header>
 
   <div class="container">
@@ -142,16 +149,13 @@
     let rawData = [];
     let headers = [];
 
-    // Función para cargar los datos
     async function cargarBD() {
       try {
         const respuesta = await fetch('data_ben.json');
         rawData = await respuesta.json();
         
         if (rawData.length > 0) {
-          // Extraer todas las columnas posibles del primer objeto
           headers = Object.keys(rawData[0]);
-          
           construirCabecera();
           mostrarResultados(rawData);
           document.getElementById('meta').textContent = `${rawData.length} registros totales encontrados`;
@@ -162,13 +166,11 @@
       }
     }
 
-    // Crea las columnas dinámicamente
     function construirCabecera() {
       const headerRow = headers.map(h => `<th>${h.replace(/_/g, ' ')}</th>`).join('');
       document.getElementById('theader').innerHTML = `<tr>${headerRow}</tr>`;
     }
 
-    // Muestra las filas con todas sus celdas
     function mostrarResultados(lista) {
       const cuerpo = document.getElementById('tfooter');
       if (lista.length === 0) {
@@ -179,7 +181,6 @@
       const filasHtml = lista.map(item => {
         const celdas = headers.map(col => {
           let valor = item[col];
-          // Manejo de valores nulos o vacíos
           if (valor === null || valor === undefined || valor === 0) {
             if (typeof valor !== 'number') valor = "-";
           }
@@ -191,7 +192,6 @@
       cuerpo.innerHTML = filasHtml;
     }
 
-    // Buscador "Deep Search" en todas las columnas
     function ejecutarBusqueda() {
       const termino = document.getElementById('q').value.toLowerCase().trim();
       
@@ -202,7 +202,6 @@
       }
 
       const filtrados = rawData.filter(fila => {
-        // Busca el término en cada uno de los valores de la fila
         return Object.values(fila).some(valor => 
           String(valor).toLowerCase().includes(termino)
         );
@@ -217,7 +216,6 @@
       ejecutarBusqueda();
     }
 
-    // Permitir buscar al presionar Enter
     document.getElementById('q').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') ejecutarBusqueda();
     });
