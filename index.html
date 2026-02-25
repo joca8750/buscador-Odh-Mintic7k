@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Buscador Centros Digitales R3</title>
   <style>
     :root { 
@@ -11,7 +11,7 @@
       --card: #0d1117; 
       --ink: #ffffff; 
       --muted: #cbd5e1; 
-      --accent: #ff0000; /* Rojo Neón */
+      --accent: #ff0000;
       --accent-glow: rgba(211, 47, 47, 0.4);
       --border: #30363d;
       --white: #ffffff;
@@ -20,7 +20,7 @@
     html, body { 
       background: var(--bg); 
       color: var(--ink); 
-      font-family: 'Orbitron', 'Segoe UI', sans-serif; /* Fuente futurista opcional */
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
       margin: 0; 
       overflow-x: hidden;
     }
@@ -33,37 +33,43 @@
       box-shadow: 0 0 20px var(--accent-glow);
       display: flex;
       align-items: center;
-      gap: 20px;
+      justify-content: center; /* CENTRADO DE CONTENIDO */
+      gap: 30px;
+      position: relative;
     }
 
-    .header-logo {
-      width: 180px; 
+    .header-logo-left {
+      width: 150px; 
       height: auto;
       border-radius: 8px;
-      border: 2px solid white;
+      position: absolute; /* Para no empujar el título del centro */
+      left: 40px;
     }
 
+    /* IMAGEN OTO MÁS GRANDE */
     .oto-logo {
-      width: 60px; /* Ajuste para la nueva imagen */
+      width: 100px; 
       height: auto;
-      border-radius: 50%;
+      border-radius: 12px;
       border: 2px solid white;
-      box-shadow: 0 0 10px white;
+      box-shadow: 0 0 15px white;
     }
 
+    /* TÍTULO CENTRADO Y EN NEGRITA */
     h1 { 
       margin: 0; 
-      font-size: 28px; 
+      font-size: 30px; 
       text-transform: uppercase; 
-      letter-spacing: 2px;
-      font-weight: 900;
+      letter-spacing: 1.5px;
+      font-weight: 900; 
+      text-align: center;
     }
 
     .container { padding: 30px; }
 
     .search-section { 
       background: var(--card); 
-      padding: 25px; 
+      padding: 20px; 
       border-radius: 15px; 
       border: 1px solid var(--accent);
       margin-bottom: 25px;
@@ -78,7 +84,7 @@
       border: 1px solid var(--border); 
       padding: 15px; 
       border-radius: 8px; 
-      color: #00ff00; /* Verde matrix para el input */
+      color: #00ff00; 
       font-family: monospace;
       font-size: 16px;
       outline: none;
@@ -119,18 +125,19 @@
       color: var(--accent); 
       border-bottom: 2px solid var(--accent);
       position: sticky; top: 0; z-index: 10;
+      font-weight: bold;
     }
 
-    /* DATOS EN NEGRITA */
+    /* ESTILO DE DATOS SIN NEGRITA */
     tbody td { 
-      padding: 14px 18px; 
+      padding: 12px 18px; 
       border-bottom: 1px solid var(--border); 
       color: var(--white);
-      font-weight: 800; /* Negrilla aplicada */
+      font-weight: 400; /* Estilo normal */
       outline: none;
     }
 
-    tbody tr:hover { background: rgba(211, 47, 47, 0.05); }
+    tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
 
     .counter { 
       display: inline-block; 
@@ -147,8 +154,10 @@
 <body>
 
   <header>
-    <img src="Imagen Buscador.jpg" alt="Logo" class="header-logo">
+    <img src="Imagen Buscador.jpg" alt="Logo" class="header-logo-left">
+    
     <h1>Buscador Centros Digitales R3</h1>
+    
     <img src="Oto.jpg" alt="Oto" class="oto-logo">
   </header>
 
@@ -184,7 +193,7 @@
           document.getElementById('meta').textContent = `ESTADO: OK // ${rawData.length} REGISTROS CARGADOS`;
         }
       } catch (error) {
-        document.getElementById('meta').textContent = "ERROR: FALLO EN CONEXIÓN DE BASE DE DATOS";
+        document.getElementById('meta').textContent = "ERROR EN BASE DE DATOS";
       }
     }
 
@@ -196,14 +205,13 @@
     function mostrarResultados(lista) {
       const cuerpo = document.getElementById('tfooter');
       if (lista.length === 0) {
-        cuerpo.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px; color:var(--accent);">SIN COINCIDENCIAS EN EL SECTOR</td></tr>`;
+        cuerpo.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px; color:var(--accent);">SIN COINCIDENCIAS</td></tr>`;
         return;
       }
 
       const filasHtml = lista.map(item => {
         const celdas = headers.map(col => {
           let valor = item[col] || "-";
-          // Mantiene la funcionalidad de edición con negrilla
           return `<td contenteditable="true" onblur="guardarCambio(${item.ID}, '${col}', this.innerText)">${valor}</td>`;
         }).join('');
         return `<tr>${celdas}</tr>`;
@@ -218,7 +226,7 @@
         Object.values(fila).some(valor => String(valor).toLowerCase().includes(termino))
       );
       mostrarResultados(filtrados);
-      document.getElementById('meta').textContent = `BÚSQUEDA FINALIZADA: ${filtrados.length} REGISTROS ENCONTRADOS`;
+      document.getElementById('meta').textContent = `BÚSQUEDA: ${filtrados.length} REGISTROS`;
     }
 
     function limpiar() {
@@ -239,9 +247,8 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(rawData)
         });
-        console.log("BASE DE DATOS ACTUALIZADA.");
       } catch (error) {
-        console.error("ERROR DE ESCRITURA EN DISCO.");
+        console.error("Error al sincronizar.");
       }
     }
 
