@@ -26,24 +26,20 @@
       overflow-x: hidden;
     }
 
-    /* HEADER RESPONSIVO */
     header { 
       padding: 20px; 
       background: var(--header-bg); 
       color: white;
       border-bottom: 4px solid #b71c1c;
       display: flex;
-      flex-direction: column; /* Apila logo y título en móviles */
+      flex-direction: column;
       align-items: center;
       gap: 15px;
       text-align: center;
+      position: relative;
     }
 
-    .header-logo-left {
-      width: 130px; 
-      height: auto;
-      border-radius: 8px;
-    }
+    .header-logo-left { width: 130px; height: auto; border-radius: 8px; }
 
     h1 { 
       margin: 0; 
@@ -56,7 +52,6 @@
 
     .container { padding: 15px; }
 
-    /* SECCIÓN DE BÚSQUEDA ADAPTABLE */
     .search-section { 
       background: #f8f9fa; 
       padding: 15px; 
@@ -64,13 +59,12 @@
       border: 1px solid var(--border);
       margin-bottom: 20px;
       display: flex;
-      flex-wrap: wrap; /* Permite que los botones bajen si no caben */
+      flex-wrap: wrap;
       gap: 10px;
     }
 
     input#q { 
-      flex: 1 1 100%; /* El buscador ocupa todo el ancho en móvil */
-      background: #ffffff; 
+      flex: 1 1 100%; 
       border: 2px solid var(--border); 
       padding: 12px; 
       border-radius: 8px; 
@@ -78,25 +72,15 @@
       outline: none;
     }
 
-    .btn { 
-      flex: 1; /* Los botones crecen para ocupar el espacio equitativamente */
-      padding: 12px; 
-      border-radius: 8px; 
-      border: none; 
-      cursor: pointer; 
-      font-weight: bold; 
-      text-transform: uppercase; 
-      transition: 0.3s;
-      font-size: 14px;
-    }
-    
+    .btn { flex: 1; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; font-size: 14px; }
     .btn-primary { background: var(--accent); color: white; }
     .btn-secondary { background: #6b7280; color: white; }
+    .btn-secondary:hover { background: #1f2937; }
 
-    /* SEGMENTOS DE ESTADÍSTICAS EN FILA O COLUMNA */
+    /* FILA DE ESTADÍSTICAS SEGMENTADA */
     .stats-row { 
       display: flex; 
-      flex-direction: column; /* En móvil se apilan para leerse mejor */
+      flex-direction: column; 
       margin-bottom: 20px;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -104,33 +88,48 @@
     }
 
     .stat-segment {
-      padding: 10px 15px;
-      font-size: 12px;
+      padding: 12px 15px;
+      font-size: 13px;
       color: white;
-      font-weight: 400;
       text-transform: uppercase;
-      border-bottom: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center; /* CENTRA EL CONTENIDO */
+      text-align: center;
     }
 
-    .seg-total { background: var(--seg-total); }
-    .seg-dept { background: var(--seg-dept); overflow-x: auto; white-space: nowrap; }
-    .seg-proj { background: var(--seg-proj); border-bottom: none; }
+    .seg-total { background: var(--seg-total); font-weight: bold; }
+    
+    /* FRANJA ROJA CENTRADA Y DISTRIBUIDA */
+    .seg-dept { 
+      background: var(--seg-dept); 
+      flex-grow: 1; 
+      display: flex;
+      flex-wrap: wrap; /* Para que en móvil se acomoden solos */
+      gap: 20px; /* ESPACIO ENTRE DEPARTAMENTOS */
+      justify-content: center; /* CENTRADO ABSOLUTO */
+    }
 
-    /* TABLA CON SCROLL MEJORADO */
+    .seg-proj { background: var(--seg-proj); }
+
+    /* ESTILO PARA CADA ITEM DENTRO DE LA FRANJA */
+    .dept-item {
+      padding: 0 10px;
+      white-space: nowrap;
+    }
+
     .table-wrapper { 
       overflow-x: auto; 
       border-radius: 12px; 
       border: 1px solid var(--border); 
       background: #ffffff;
       max-height: 50vh;
-      -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
     }
 
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
     thead th { background: #f3f4f6; padding: 12px; text-align: left; color: var(--accent); position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--accent); }
     tbody td { padding: 10px; border-bottom: 1px solid #eeeeee; color: #000000; }
 
-    /* AJUSTES PARA PANTALLAS GRANDES (PC) */
     @media (min-width: 768px) {
       header { flex-direction: row; justify-content: center; }
       .header-logo-left { position: absolute; left: 40px; }
@@ -192,20 +191,25 @@
       document.getElementById('theader').innerHTML = `<tr>${headerRow}</tr>`;
     }
 
-    function calcularResumen(data, columna) {
+    // LÓGICA MEJORADA PARA SEPARAR Y CENTRAR ITEMS
+    function calcularResumenHTML(data, columna) {
       const conteo = {};
       data.forEach(item => {
         const valor = (item[columna] || "N/A").toString().toUpperCase();
         conteo[valor] = (conteo[valor] || 0) + 1;
       });
-      return Object.entries(conteo).map(([key, val]) => `${val} ${key}`).join(' | ');
+      
+      return Object.entries(conteo)
+        .map(([key, val]) => `<span class="dept-item">${val} ${key}</span>`)
+        .join(' <span style="opacity:0.3">|</span> ');
     }
 
     function actualizarInterfaz(data) {
       mostrarResultados(data);
       document.getElementById('meta').textContent = `${data.length} REGISTROS`;
-      document.getElementById('dept-stats').textContent = calcularResumen(data, 'DEPARTAMENTO');
-      document.getElementById('proj-stats').textContent = calcularResumen(data, 'PROYECTO');
+      // Insertamos como HTML para que los SPAN funcionen con el CSS de centrado
+      document.getElementById('dept-stats').innerHTML = calcularResumenHTML(data, 'DEPARTAMENTO');
+      document.getElementById('proj-stats').innerHTML = calcularResumenHTML(data, 'PROYECTO');
     }
 
     function mostrarResultados(lista) {
