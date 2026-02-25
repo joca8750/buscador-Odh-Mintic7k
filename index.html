@@ -13,10 +13,9 @@
       --ink: #000000; 
       --accent: #d32f2f;
       --border: #d1d5db;
-      /* Colores para segmentos */
-      --seg-total: #1e40af; /* Azul */
-      --seg-dept: #b91c1c;  /* Rojo */
-      --seg-proj: #374151;  /* Gris oscuro */
+      --seg-total: #1e40af; 
+      --seg-dept: #b91c1c;  
+      --seg-proj: #374151;  
     }
 
     html, body { 
@@ -27,106 +26,121 @@
       overflow-x: hidden;
     }
 
+    /* HEADER RESPONSIVO */
     header { 
-      padding: 25px 40px; 
+      padding: 20px; 
       background: var(--header-bg); 
       color: white;
       border-bottom: 4px solid #b71c1c;
       display: flex;
+      flex-direction: column; /* Apila logo y título en móviles */
       align-items: center;
-      justify-content: center;
-      position: relative;
+      gap: 15px;
+      text-align: center;
     }
 
     .header-logo-left {
-      width: 150px; 
+      width: 130px; 
       height: auto;
       border-radius: 8px;
-      position: absolute; 
-      left: 40px;
     }
 
     h1 { 
       margin: 0; 
-      font-size: 42px; 
+      font-size: 32px; 
       text-transform: uppercase; 
       letter-spacing: 1px;
-      text-align: center;
       font-family: 'League Gothic', sans-serif;
       font-weight: 400;
     }
 
-    .container { padding: 30px; }
+    .container { padding: 15px; }
 
+    /* SECCIÓN DE BÚSQUEDA ADAPTABLE */
     .search-section { 
       background: #f8f9fa; 
-      padding: 20px; 
+      padding: 15px; 
       border-radius: 15px; 
       border: 1px solid var(--border);
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       display: flex;
-      gap: 15px;
-      align-items: center;
+      flex-wrap: wrap; /* Permite que los botones bajen si no caben */
+      gap: 10px;
     }
 
     input#q { 
-      flex-grow: 1; 
+      flex: 1 1 100%; /* El buscador ocupa todo el ancho en móvil */
       background: #ffffff; 
       border: 2px solid var(--border); 
-      padding: 15px; 
+      padding: 12px; 
       border-radius: 8px; 
       font-size: 16px;
       outline: none;
     }
 
-    .btn { padding: 15px 30px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
+    .btn { 
+      flex: 1; /* Los botones crecen para ocupar el espacio equitativamente */
+      padding: 12px; 
+      border-radius: 8px; 
+      border: none; 
+      cursor: pointer; 
+      font-weight: bold; 
+      text-transform: uppercase; 
+      transition: 0.3s;
+      font-size: 14px;
+    }
     
     .btn-primary { background: var(--accent); color: white; }
-    .btn-primary:hover { background: #b71c1c; transform: scale(1.02); }
-
-    /* BOTÓN BORRAR MEJORADO */
     .btn-secondary { background: #6b7280; color: white; }
-    .btn-secondary:hover { background: #1f2937; transform: scale(1.02); box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
 
-    /* SEGMENTOS DE ESTADÍSTICAS */
+    /* SEGMENTOS DE ESTADÍSTICAS EN FILA O COLUMNA */
     .stats-row { 
       display: flex; 
-      align-items: stretch; 
+      flex-direction: column; /* En móvil se apilan para leerse mejor */
       margin-bottom: 20px;
       border: 1px solid var(--border);
       border-radius: 8px;
       overflow: hidden;
-      white-space: nowrap;
     }
 
     .stat-segment {
-      padding: 12px 20px;
-      font-size: 13px;
+      padding: 10px 15px;
+      font-size: 12px;
       color: white;
-      display: flex;
-      align-items: center;
       font-weight: 400;
       text-transform: uppercase;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
     }
 
-    .seg-total { background: var(--seg-total); border-right: 2px solid white; }
-    .seg-dept { background: var(--seg-dept); border-right: 2px solid white; flex-grow: 1; overflow-x: auto; }
-    .seg-proj { background: var(--seg-proj); }
+    .seg-total { background: var(--seg-total); }
+    .seg-dept { background: var(--seg-dept); overflow-x: auto; white-space: nowrap; }
+    .seg-proj { background: var(--seg-proj); border-bottom: none; }
 
+    /* TABLA CON SCROLL MEJORADO */
     .table-wrapper { 
       overflow-x: auto; 
       border-radius: 12px; 
       border: 1px solid var(--border); 
       background: #ffffff;
-      max-height: 55vh;
-      box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+      max-height: 50vh;
+      -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
     }
 
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th { background: #f3f4f6; padding: 18px; text-align: left; color: var(--accent); border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 10; font-weight: bold; }
-    tbody td { padding: 12px 18px; border-bottom: 1px solid #eeeeee; color: #000000; outline: none; }
-    tbody tr:hover { background: #fff5f5; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    thead th { background: #f3f4f6; padding: 12px; text-align: left; color: var(--accent); position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--accent); }
+    tbody td { padding: 10px; border-bottom: 1px solid #eeeeee; color: #000000; }
 
+    /* AJUSTES PARA PANTALLAS GRANDES (PC) */
+    @media (min-width: 768px) {
+      header { flex-direction: row; justify-content: center; }
+      .header-logo-left { position: absolute; left: 40px; }
+      h1 { font-size: 42px; }
+      .search-section { flex-wrap: nowrap; }
+      input#q { flex: 1 1 auto; }
+      .btn { flex: 0 0 auto; padding: 15px 30px; }
+      .stats-row { flex-direction: row; }
+      .stat-segment { border-bottom: none; border-right: 2px solid white; }
+    }
   </style>
 </head>
 <body>
@@ -138,7 +152,7 @@
 
   <div class="container">
     <div class="search-section">
-      <input id="q" type="text" placeholder="Búsqueda de sistema... Escriba aquí" />
+      <input id="q" type="text" placeholder="Buscar sitio..." />
       <button class="btn btn-primary" onclick="ejecutarBusqueda()">BUSCAR</button>
       <button class="btn btn-secondary" onclick="limpiar()">BORRAR</button>
     </div>
@@ -170,9 +184,7 @@
           construirCabecera();
           actualizarInterfaz(rawData);
         }
-      } catch (error) {
-        document.getElementById('meta').textContent = "ERROR CONEXIÓN";
-      }
+      } catch (error) { document.getElementById('meta').textContent = "ERROR CONEXIÓN"; }
     }
 
     function construirCabecera() {
@@ -186,14 +198,12 @@
         const valor = (item[columna] || "N/A").toString().toUpperCase();
         conteo[valor] = (conteo[valor] || 0) + 1;
       });
-      return Object.entries(conteo)
-        .map(([key, val]) => `${val} ${key}`)
-        .join(' | ');
+      return Object.entries(conteo).map(([key, val]) => `${val} ${key}`).join(' | ');
     }
 
     function actualizarInterfaz(data) {
       mostrarResultados(data);
-      document.getElementById('meta').textContent = `${data.length} REGISTROS CARGADOS`;
+      document.getElementById('meta').textContent = `${data.length} REGISTROS`;
       document.getElementById('dept-stats').textContent = calcularResumen(data, 'DEPARTAMENTO');
       document.getElementById('proj-stats').textContent = calcularResumen(data, 'PROYECTO');
     }
@@ -201,14 +211,11 @@
     function mostrarResultados(lista) {
       const cuerpo = document.getElementById('tfooter');
       if (lista.length === 0) {
-        cuerpo.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px; color:var(--accent);">SIN COINCIDENCIAS</td></tr>`;
+        cuerpo.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px; color:var(--accent);">SIN RESULTADOS</td></tr>`;
         return;
       }
       const filasHtml = lista.map(item => {
-        const celdas = headers.map(col => {
-          let valor = item[col] || "-";
-          return `<td contenteditable="true" onblur="guardarCambio(${item.ID}, '${col}', this.innerText)">${valor}</td>`;
-        }).join('');
+        const celdas = headers.map(col => `<td>${item[col] || "-"}</td>`).join('');
         return `<tr>${celdas}</tr>`;
       }).join('');
       cuerpo.innerHTML = filasHtml;
@@ -216,31 +223,15 @@
 
     function ejecutarBusqueda() {
       const termino = document.getElementById('q').value.toLowerCase().trim();
-      const filtrados = rawData.filter(fila => 
-        Object.values(fila).some(valor => String(valor).toLowerCase().includes(termino))
-      );
+      const filtrados = rawData.filter(fila => Object.values(fila).some(v => String(v).toLowerCase().includes(termino)));
       actualizarInterfaz(filtrados);
     }
 
     function limpiar() {
       document.getElementById('q').value = "";
       actualizarInterfaz(rawData);
-      document.getElementById('q').focus();
     }
 
-    async function guardarCambio(id, columna, nuevoValor) {
-      const registro = rawData.find(item => item.ID == id);
-      if (registro) { registro[columna] = nuevoValor; }
-      try {
-        await fetch('http://localhost:5000/guardar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(rawData)
-        });
-      } catch (error) { console.error("Error al sincronizar."); }
-    }
-
-    document.getElementById('q').addEventListener('keypress', (e) => { if (e.key === 'Enter') ejecutarBusqueda(); });
     window.onload = cargarBD;
   </script>
 </body>
