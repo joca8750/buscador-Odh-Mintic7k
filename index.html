@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Buscador Centros Digitales R3</title>
   <style>
-    /* Importación de fuentes sugeridas si no están instaladas localmente */
     @import url('https://fonts.googleapis.com/css2?family=League+Gothic&display=swap');
 
     :root { 
@@ -13,7 +12,6 @@
       --header-bg: #d32f2f;
       --card: #f8f9fa; 
       --ink: #000000; 
-      --muted: #333333; 
       --accent: #d32f2f;
       --border: #d1d5db;
     }
@@ -21,7 +19,6 @@
     html, body { 
       background: var(--bg); 
       color: var(--ink); 
-      /* FUENTE LUXIA PARA EL CUERPO */
       font-family: 'Luxia', 'Segoe UI', Roboto, sans-serif; 
       margin: 0; 
       overflow-x: hidden;
@@ -47,13 +44,11 @@
       left: 40px;
     }
 
-    /* TÍTULO EN FUENTE LEAGUE GOTHIC Y EN NEGRITA */
     h1 { 
       margin: 0; 
-      font-size: 42px; /* Un poco más grande por ser una fuente condensada */
+      font-size: 42px; 
       text-transform: uppercase; 
       letter-spacing: 1px;
-      font-weight: normal; /* League Gothic suele ser gruesa por defecto */
       text-align: center;
       font-family: 'League Gothic', Impact, sans-serif;
     }
@@ -69,13 +64,9 @@
       display: flex;
       gap: 15px;
       align-items: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
 
-    /* ELEMENTOS EN FUENTE LUXIA */
-    input#q, .btn, .counter, table {
-      font-family: 'Luxia', 'Segoe UI', sans-serif;
-    }
+    input#q, .btn, .counter, table { font-family: 'Luxia', 'Segoe UI', sans-serif; }
 
     input#q { 
       flex-grow: 1; 
@@ -90,54 +81,14 @@
 
     input#q:focus { border-color: var(--accent); }
 
-    .btn { 
-      padding: 15px 30px; 
-      border-radius: 8px; 
-      border: none; 
-      cursor: pointer; 
-      font-weight: bold; 
-      text-transform: uppercase;
-      transition: 0.3s;
-    }
-
+    .btn { padding: 15px 30px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
     .btn-primary { background: var(--accent); color: white; }
     .btn-primary:hover { background: #b71c1c; }
-
     .btn-secondary { background: #4b5563; color: white; }
-    .btn-secondary:hover { background: #374151; }
 
-    .table-wrapper { 
-      overflow-x: auto; 
-      border-radius: 12px; 
-      border: 1px solid var(--border); 
-      background: #ffffff;
-      max-height: 70vh;
-      box-shadow: 0 10px 15px rgba(0,0,0,0.05);
-    }
+    .stats-container { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
 
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-
-    thead th { 
-      background: #f3f4f6; 
-      padding: 18px; 
-      text-align: left; 
-      color: var(--accent); 
-      border-bottom: 2px solid var(--accent);
-      position: sticky; top: 0; z-index: 10;
-      font-weight: bold;
-    }
-
-    tbody td { 
-      padding: 12px 18px; 
-      border-bottom: 1px solid #eeeeee; 
-      color: #000000; 
-      font-weight: 400; /* DATOS SIN NEGRITA */
-      outline: none;
-    }
-
-    tbody tr:nth-child(even) { background: #fafafa; }
-    tbody tr:hover { background: #fff5f5; }
-
+    /* ESTILO SOLICITADO PARA EL CONTADOR Y RESUMEN */
     .counter { 
       display: inline-block; 
       padding: 10px 20px; 
@@ -146,10 +97,23 @@
       border-left: 5px solid var(--accent);
       font-size: 14px; 
       color: #000000; 
-      margin-bottom: 20px;
       font-weight: bold;
       text-transform: uppercase;
     }
+
+    .table-wrapper { 
+      overflow-x: auto; 
+      border-radius: 12px; 
+      border: 1px solid var(--border); 
+      background: #ffffff;
+      max-height: 60vh;
+      box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th { background: #f3f4f6; padding: 18px; text-align: left; color: var(--accent); border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 10; }
+    tbody td { padding: 12px 18px; border-bottom: 1px solid #eeeeee; color: #000000; outline: none; }
+    tbody tr:hover { background: #fff5f5; }
   </style>
 </head>
 <body>
@@ -166,7 +130,11 @@
       <button class="btn btn-secondary" onclick="limpiar()">BORRAR</button>
     </div>
 
-    <div id="meta" class="counter">CARGANDO REGISTROS...</div>
+    <div class="stats-container">
+      <div id="meta" class="counter">CARGANDO...</div>
+      <div id="dept-stats" class="counter">PROCESANDO DEPARTAMENTOS...</div>
+      <div id="proj-stats" class="counter">PROCESANDO PROYECTOS...</div>
+    </div>
 
     <div class="table-wrapper">
       <table id="mainTable">
@@ -187,8 +155,7 @@
         if (rawData.length > 0) {
           headers = Object.keys(rawData[0]);
           construirCabecera();
-          mostrarResultados(rawData);
-          document.getElementById('meta').textContent = `${rawData.length} REGISTROS CARGADOS`;
+          actualizarInterfaz(rawData);
         }
       } catch (error) {
         document.getElementById('meta').textContent = "ERROR DE CONEXIÓN";
@@ -198,6 +165,28 @@
     function construirCabecera() {
       const headerRow = headers.map(h => `<th>${h.replace(/_/g, ' ')}</th>`).join('');
       document.getElementById('theader').innerHTML = `<tr>${headerRow}</tr>`;
+    }
+
+    // NUEVA FUNCIÓN: Calcula cantidades por columna específica
+    function calcularResumen(data, columna) {
+      const conteo = {};
+      data.forEach(item => {
+        const valor = item[columna] || "N/A";
+        conteo[valor] = (conteo[valor] || 0) + 1;
+      });
+      // Retorna los 2 principales para no saturar la vista, o puedes mostrar todos
+      return Object.entries(conteo)
+        .map(([key, val]) => `${val} ${key}`)
+        .join(' | ');
+    }
+
+    function actualizarInterfaz(data) {
+      mostrarResultados(data);
+      document.getElementById('meta').textContent = `${data.length} REGISTROS CARGADOS`;
+      
+      // Actualiza estadísticas al lado con el mismo estilo
+      document.getElementById('dept-stats').textContent = calcularResumen(data, 'DEPARTAMENTO');
+      document.getElementById('proj-stats').textContent = calcularResumen(data, 'PROYECTO');
     }
 
     function mostrarResultados(lista) {
@@ -223,14 +212,12 @@
       const filtrados = rawData.filter(fila => 
         Object.values(fila).some(valor => String(valor).toLowerCase().includes(termino))
       );
-      mostrarResultados(filtrados);
-      document.getElementById('meta').textContent = `${filtrados.length} REGISTROS ENCONTRADOS`;
+      actualizarInterfaz(filtrados);
     }
 
     function limpiar() {
       document.getElementById('q').value = "";
-      mostrarResultados(rawData);
-      document.getElementById('meta').textContent = `${rawData.length} REGISTROS CARGADOS`;
+      actualizarInterfaz(rawData);
       document.getElementById('q').focus();
     }
 
@@ -245,15 +232,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(rawData)
         });
-      } catch (error) {
-        console.error("Error al sincronizar con el servidor Python.");
-      }
+      } catch (error) { console.error("Error al sincronizar."); }
     }
 
-    document.getElementById('q').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') ejecutarBusqueda();
-    });
-
+    document.getElementById('q').addEventListener('keypress', (e) => { if (e.key === 'Enter') ejecutarBusqueda(); });
     window.onload = cargarBD;
   </script>
 </body>
