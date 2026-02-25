@@ -51,6 +51,7 @@
       letter-spacing: 1px;
       text-align: center;
       font-family: 'League Gothic', Impact, sans-serif;
+      font-weight: bold; /* Título permanece en negrita */
     }
 
     .container { padding: 30px; }
@@ -79,27 +80,34 @@
       outline: none;
     }
 
-    input#q:focus { border-color: var(--accent); }
-
     .btn { padding: 15px 30px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
     .btn-primary { background: var(--accent); color: white; }
-    .btn-primary:hover { background: #b71c1c; }
     .btn-secondary { background: #4b5563; color: white; }
 
-    .stats-container { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
-
-    /* ESTILO SOLICITADO PARA EL CONTADOR Y RESUMEN */
-    .counter { 
-      display: inline-block; 
-      padding: 10px 20px; 
+    /* FILA ÚNICA DE ESTADÍSTICAS */
+    .stats-row { 
+      display: flex; 
+      align-items: center; 
+      gap: 0; /* Espacio manejado por el borde interno */
       background: #ffffff;
       border: 1px solid var(--accent);
       border-left: 5px solid var(--accent);
-      font-size: 14px; 
-      color: #000000; 
-      font-weight: bold;
-      text-transform: uppercase;
+      margin-bottom: 20px;
+      padding: 10px 15px;
+      overflow-x: auto; /* Por si el texto es muy largo en pantallas pequeñas */
+      white-space: nowrap;
     }
+
+    .stat-item {
+      font-size: 13px; 
+      color: #000000; 
+      font-weight: 400; /* SIN NEGRITA */
+      text-transform: uppercase;
+      padding: 0 15px;
+      border-right: 1px solid #ddd;
+    }
+
+    .stat-item:last-child { border-right: none; }
 
     .table-wrapper { 
       overflow-x: auto; 
@@ -111,8 +119,8 @@
     }
 
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th { background: #f3f4f6; padding: 18px; text-align: left; color: var(--accent); border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 10; }
-    tbody td { padding: 12px 18px; border-bottom: 1px solid #eeeeee; color: #000000; outline: none; }
+    thead th { background: #f3f4f6; padding: 18px; text-align: left; color: var(--accent); border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 10; font-weight: bold; }
+    tbody td { padding: 12px 18px; border-bottom: 1px solid #eeeeee; color: #000000; outline: none; font-weight: 400; }
     tbody tr:hover { background: #fff5f5; }
   </style>
 </head>
@@ -130,10 +138,10 @@
       <button class="btn btn-secondary" onclick="limpiar()">BORRAR</button>
     </div>
 
-    <div class="stats-container">
-      <div id="meta" class="counter">CARGANDO...</div>
-      <div id="dept-stats" class="counter">PROCESANDO DEPARTAMENTOS...</div>
-      <div id="proj-stats" class="counter">PROCESANDO PROYECTOS...</div>
+    <div class="stats-row">
+      <div id="meta" class="stat-item">CARGANDO...</div>
+      <div id="dept-stats" class="stat-item">...</div>
+      <div id="proj-stats" class="stat-item">...</div>
     </div>
 
     <div class="table-wrapper">
@@ -167,14 +175,12 @@
       document.getElementById('theader').innerHTML = `<tr>${headerRow}</tr>`;
     }
 
-    // NUEVA FUNCIÓN: Calcula cantidades por columna específica
     function calcularResumen(data, columna) {
       const conteo = {};
       data.forEach(item => {
-        const valor = item[columna] || "N/A";
+        const valor = (item[columna] || "N/A").toString().toUpperCase();
         conteo[valor] = (conteo[valor] || 0) + 1;
       });
-      // Retorna los 2 principales para no saturar la vista, o puedes mostrar todos
       return Object.entries(conteo)
         .map(([key, val]) => `${val} ${key}`)
         .join(' | ');
@@ -183,8 +189,6 @@
     function actualizarInterfaz(data) {
       mostrarResultados(data);
       document.getElementById('meta').textContent = `${data.length} REGISTROS CARGADOS`;
-      
-      // Actualiza estadísticas al lado con el mismo estilo
       document.getElementById('dept-stats').textContent = calcularResumen(data, 'DEPARTAMENTO');
       document.getElementById('proj-stats').textContent = calcularResumen(data, 'PROYECTO');
     }
@@ -192,10 +196,9 @@
     function mostrarResultados(lista) {
       const cuerpo = document.getElementById('tfooter');
       if (lista.length === 0) {
-        cuerpo.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px; color:var(--accent); font-weight:bold;">SIN COINCIDENCIAS</td></tr>`;
+        cuerpo.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px; color:var(--accent);">SIN COINCIDENCIAS</td></tr>`;
         return;
       }
-
       const filasHtml = lista.map(item => {
         const celdas = headers.map(col => {
           let valor = item[col] || "-";
@@ -203,7 +206,6 @@
         }).join('');
         return `<tr>${celdas}</tr>`;
       }).join('');
-
       cuerpo.innerHTML = filasHtml;
     }
 
@@ -223,9 +225,7 @@
 
     async function guardarCambio(id, columna, nuevoValor) {
       const registro = rawData.find(item => item.ID == id);
-      if (registro) {
-        registro[columna] = nuevoValor;
-      }
+      if (registro) { registro[columna] = nuevoValor; }
       try {
         await fetch('http://localhost:5000/guardar', {
           method: 'POST',
