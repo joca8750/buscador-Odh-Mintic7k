@@ -10,10 +10,13 @@
     :root { 
       --bg: #ffffff; 
       --header-bg: #d32f2f;
-      --card: #f8f9fa; 
       --ink: #000000; 
       --accent: #d32f2f;
       --border: #d1d5db;
+      /* Colores para segmentos */
+      --seg-total: #1e40af; /* Azul */
+      --seg-dept: #b91c1c;  /* Rojo */
+      --seg-proj: #374151;  /* Gris oscuro */
     }
 
     html, body { 
@@ -29,7 +32,6 @@
       background: var(--header-bg); 
       color: white;
       border-bottom: 4px solid #b71c1c;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -44,21 +46,20 @@
       left: 40px;
     }
 
-    /* TÍTULO SIN NEGRITA */
     h1 { 
       margin: 0; 
       font-size: 42px; 
       text-transform: uppercase; 
       letter-spacing: 1px;
       text-align: center;
-      font-family: 'League Gothic', Impact, sans-serif;
-      font-weight: 400; /* PESO NORMAL */
+      font-family: 'League Gothic', sans-serif;
+      font-weight: 400;
     }
 
     .container { padding: 30px; }
 
     .search-section { 
-      background: var(--card); 
+      background: #f8f9fa; 
       padding: 20px; 
       border-radius: 15px; 
       border: 1px solid var(--border);
@@ -68,60 +69,64 @@
       align-items: center;
     }
 
-    input#q, .btn, .counter, table { font-family: 'Luxia', 'Segoe UI', sans-serif; }
-
     input#q { 
       flex-grow: 1; 
       background: #ffffff; 
       border: 2px solid var(--border); 
       padding: 15px; 
       border-radius: 8px; 
-      color: #000000; 
       font-size: 16px;
       outline: none;
     }
 
     .btn { padding: 15px 30px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
+    
     .btn-primary { background: var(--accent); color: white; }
-    .btn-secondary { background: #4b5563; color: white; }
+    .btn-primary:hover { background: #b71c1c; transform: scale(1.02); }
 
+    /* BOTÓN BORRAR MEJORADO */
+    .btn-secondary { background: #6b7280; color: white; }
+    .btn-secondary:hover { background: #1f2937; transform: scale(1.02); box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+
+    /* SEGMENTOS DE ESTADÍSTICAS */
     .stats-row { 
       display: flex; 
-      align-items: center; 
-      gap: 0; 
-      background: #ffffff;
-      border: 1px solid var(--accent);
-      border-left: 5px solid var(--accent);
+      align-items: stretch; 
       margin-bottom: 20px;
-      padding: 10px 15px;
-      overflow-x: auto; 
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
       white-space: nowrap;
     }
 
-    .stat-item {
-      font-size: 13px; 
-      color: #000000; 
-      font-weight: 400; 
+    .stat-segment {
+      padding: 12px 20px;
+      font-size: 13px;
+      color: white;
+      display: flex;
+      align-items: center;
+      font-weight: 400;
       text-transform: uppercase;
-      padding: 0 15px;
-      border-right: 1px solid #ddd;
     }
 
-    .stat-item:last-child { border-right: none; }
+    .seg-total { background: var(--seg-total); border-right: 2px solid white; }
+    .seg-dept { background: var(--seg-dept); border-right: 2px solid white; flex-grow: 1; overflow-x: auto; }
+    .seg-proj { background: var(--seg-proj); }
 
     .table-wrapper { 
       overflow-x: auto; 
       border-radius: 12px; 
       border: 1px solid var(--border); 
       background: #ffffff;
-      max-height: 60vh;
+      max-height: 55vh;
       box-shadow: 0 10px 15px rgba(0,0,0,0.05);
     }
 
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     thead th { background: #f3f4f6; padding: 18px; text-align: left; color: var(--accent); border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 10; font-weight: bold; }
-    tbody td { padding: 12px 18px; border-bottom: 1px solid #eeeeee; color: #000000; outline: none; font-weight: 400; }
+    tbody td { padding: 12px 18px; border-bottom: 1px solid #eeeeee; color: #000000; outline: none; }
     tbody tr:hover { background: #fff5f5; }
+
   </style>
 </head>
 <body>
@@ -139,9 +144,9 @@
     </div>
 
     <div class="stats-row">
-      <div id="meta" class="stat-item">CARGANDO...</div>
-      <div id="dept-stats" class="stat-item">...</div>
-      <div id="proj-stats" class="stat-item">...</div>
+      <div id="meta" class="stat-segment seg-total">CARGANDO...</div>
+      <div id="dept-stats" class="stat-segment seg-dept">...</div>
+      <div id="proj-stats" class="stat-segment seg-proj">...</div>
     </div>
 
     <div class="table-wrapper">
@@ -166,7 +171,7 @@
           actualizarInterfaz(rawData);
         }
       } catch (error) {
-        document.getElementById('meta').textContent = "ERROR DE CONEXIÓN";
+        document.getElementById('meta').textContent = "ERROR CONEXIÓN";
       }
     }
 
