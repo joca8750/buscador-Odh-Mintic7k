@@ -2,160 +2,160 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Buscador Centros Digitales R3</title>
   <style>
     :root { 
-      --bg: #f4f7f6; 
-      --card: #ffffff; 
-      --ink: #1a1a1a; 
-      --muted: #4a4a4a; 
-      --accent: #d32f2f; 
-      --accent-hover: #b71c1c;
-      --border: #e0e0e0;
+      --bg: #05080a; 
       --header-bg: #d32f2f;
+      --card: #0d1117; 
+      --ink: #ffffff; 
+      --muted: #cbd5e1; 
+      --accent: #ff0000;
+      --accent-glow: rgba(211, 47, 47, 0.4);
+      --border: #30363d;
+      --white: #ffffff;
     }
 
     html, body { 
       background: var(--bg); 
       color: var(--ink); 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
       margin: 0; 
       overflow-x: hidden;
     }
 
     header { 
-      padding: 30px; 
+      padding: 25px 40px; 
       background: var(--header-bg); 
       color: white;
-      border-bottom: 4px solid #b71c1c; 
+      border-bottom: 2px solid var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
       display: flex;
       align-items: center;
-      gap: 30px;
+      justify-content: center; /* TÍTULO CENTRADO */
+      position: relative;
     }
 
-    .header-logo {
-      width: 220px; 
+    .header-logo-left {
+      width: 150px; 
       height: auto;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      background: white;
-      padding: 5px;
+      border-radius: 8px;
+      position: absolute; 
+      left: 40px;
     }
 
-    h1 { margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+    h1 { 
+      margin: 0; 
+      font-size: 30px; 
+      text-transform: uppercase; 
+      letter-spacing: 1.5px;
+      font-weight: 900; /* TÍTULO EN NEGRITA */
+      text-align: center;
+    }
 
-    .container { padding: 20px; max-width: 100%; }
+    .container { padding: 30px; }
 
     .search-section { 
       background: var(--card); 
       padding: 20px; 
-      border-radius: 12px; 
-      border: 1px solid var(--border);
-      margin-bottom: 20px;
+      border-radius: 15px; 
+      border: 1px solid var(--accent);
+      margin-bottom: 25px;
       display: flex;
       gap: 15px;
-      align-items: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.1);
     }
 
     input#q { 
       flex-grow: 1; 
-      background: #ffffff; 
-      border: 2px solid var(--border); 
-      padding: 14px 18px; 
+      background: #000; 
+      border: 1px solid var(--border); 
+      padding: 15px; 
       border-radius: 8px; 
-      color: var(--ink); 
+      color: #00ff00; 
+      font-family: monospace;
       font-size: 16px;
       outline: none;
-      transition: border-color 0.3s;
     }
 
-    input#q:focus { border-color: var(--accent); }
+    input#q:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
 
     .btn { 
-      padding: 14px 28px; 
+      padding: 15px 30px; 
       border-radius: 8px; 
-      border: none; 
+      border: 1px solid var(--accent);
       cursor: pointer; 
-      font-weight: 600; 
+      font-weight: bold; 
+      text-transform: uppercase;
       transition: 0.3s;
     }
 
     .btn-primary { background: var(--accent); color: white; }
-    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    .btn-primary:hover { background: #ff4d4d; box-shadow: 0 0 20px var(--accent); }
 
-    /* Botón ahora llamado BORRAR en el código visual */
-    .btn-secondary { background: #616161; color: white; }
-    .btn-secondary:hover { background: #424242; transform: translateY(-2px); }
+    .btn-secondary { background: transparent; color: white; border-color: #fff; }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
 
     .table-wrapper { 
       overflow-x: auto; 
-      border-radius: 10px; 
+      border-radius: 12px; 
       border: 1px solid var(--border); 
       background: var(--card);
-      max-height: 75vh;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      max-height: 70vh;
     }
 
-    table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
 
     thead th { 
-      background: #f8f9fa; 
-      padding: 15px; 
+      background: #161b22; 
+      padding: 18px; 
       text-align: left; 
       color: var(--accent); 
-      text-transform: uppercase;
-      font-size: 11px;
-      border-bottom: 3px solid var(--accent);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      border-bottom: 2px solid var(--accent);
+      position: sticky; top: 0; z-index: 10;
+      font-weight: bold;
     }
 
     tbody td { 
-      padding: 12px 15px; 
+      padding: 12px 18px; 
       border-bottom: 1px solid var(--border); 
-      color: var(--muted);
+      color: var(--white);
+      font-weight: 400; /* DATOS SIN NEGRITA */
       outline: none;
     }
 
-    tbody td[contenteditable="true"]:focus {
-      background: #fff8f8;
-      color: #000;
-      box-shadow: inset 0 0 0 2px var(--accent);
-    }
+    tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
 
-    tbody tr:hover { background: #fff5f5; }
-
+    /* ESTILO DEL CONTADOR: TEXTO BLANCO */
     .counter { 
       display: inline-block; 
-      padding: 8px 18px; 
-      background: #ffebee; 
-      border: 1px solid #ffcdd2;
-      border-radius: 25px; 
-      font-size: 13px; 
-      color: var(--accent);
-      margin-bottom: 15px;
+      padding: 10px 20px; 
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid var(--accent);
+      font-size: 14px; 
+      color: #ffffff; /* COLOR BLANCO */
+      margin-bottom: 20px;
       font-weight: bold;
+      text-transform: uppercase;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <img src="Imagen Buscador.jpg" alt="Logo" class="header-logo">
+    <img src="Imagen Buscador.jpg" alt="Logo" class="header-logo-left">
     <h1>Buscador Centros Digitales R3</h1>
   </header>
 
   <div class="container">
     <div class="search-section">
-      <input id="q" type="text" placeholder="Escribe para buscar en cualquier columna (DANE, Municipio, ID...)" />
+      <input id="q" type="text" placeholder="TERMINAL DE BÚSQUEDA_ > Escriba aquí..." />
       <button class="btn btn-primary" onclick="ejecutarBusqueda()">BUSCAR</button>
       <button class="btn btn-secondary" onclick="limpiar()">BORRAR</button>
     </div>
 
-    <div id="meta" class="counter">Cargando registros...</div>
+    <div id="meta" class="counter">CARGANDO REGISTROS...</div>
 
     <div class="table-wrapper">
       <table id="mainTable">
@@ -173,15 +173,14 @@
       try {
         const respuesta = await fetch('data_ben.json');
         rawData = await respuesta.json();
-        
         if (rawData.length > 0) {
           headers = Object.keys(rawData[0]);
           construirCabecera();
           mostrarResultados(rawData);
-          document.getElementById('meta').textContent = `${rawData.length} registros totales encontrados`;
+          document.getElementById('meta').textContent = `${rawData.length} REGISTROS CARGADOS`;
         }
       } catch (error) {
-        document.getElementById('meta').textContent = "Error al conectar con data_ben.json.";
+        document.getElementById('meta').textContent = "ERROR EN BASE DE DATOS";
       }
     }
 
@@ -193,7 +192,7 @@
     function mostrarResultados(lista) {
       const cuerpo = document.getElementById('tfooter');
       if (lista.length === 0) {
-        cuerpo.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px; color:red;">No hay coincidencias</td></tr>`;
+        cuerpo.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px; color:var(--accent);">SIN COINCIDENCIAS</td></tr>`;
         return;
       }
 
@@ -214,13 +213,13 @@
         Object.values(fila).some(valor => String(valor).toLowerCase().includes(termino))
       );
       mostrarResultados(filtrados);
-      document.getElementById('meta').textContent = `${filtrados.length} resultados para "${termino}"`;
+      document.getElementById('meta').textContent = `${filtrados.length} REGISTROS ENCONTRADOS`;
     }
 
     function limpiar() {
       document.getElementById('q').value = "";
       mostrarResultados(rawData);
-      document.getElementById('meta').textContent = `${rawData.length} registros totales`;
+      document.getElementById('meta').textContent = `${rawData.length} REGISTROS CARGADOS`;
       document.getElementById('q').focus();
     }
 
@@ -229,16 +228,14 @@
       if (registro) {
         registro[columna] = nuevoValor;
       }
-
       try {
         await fetch('http://localhost:5000/guardar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(rawData)
         });
-        console.log("Sincronización exitosa.");
       } catch (error) {
-        console.error("Error: Asegúrate de que app.py esté corriendo.");
+        console.error("Error al sincronizar.");
       }
     }
 
