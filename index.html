@@ -44,6 +44,7 @@
       left: 40px;
     }
 
+    /* TÍTULO SIN NEGRITA */
     h1 { 
       margin: 0; 
       font-size: 42px; 
@@ -51,7 +52,7 @@
       letter-spacing: 1px;
       text-align: center;
       font-family: 'League Gothic', Impact, sans-serif;
-      font-weight: bold; /* Título permanece en negrita */
+      font-weight: 400; /* PESO NORMAL */
     }
 
     .container { padding: 30px; }
@@ -84,24 +85,23 @@
     .btn-primary { background: var(--accent); color: white; }
     .btn-secondary { background: #4b5563; color: white; }
 
-    /* FILA ÚNICA DE ESTADÍSTICAS */
     .stats-row { 
       display: flex; 
       align-items: center; 
-      gap: 0; /* Espacio manejado por el borde interno */
+      gap: 0; 
       background: #ffffff;
       border: 1px solid var(--accent);
       border-left: 5px solid var(--accent);
       margin-bottom: 20px;
       padding: 10px 15px;
-      overflow-x: auto; /* Por si el texto es muy largo en pantallas pequeñas */
+      overflow-x: auto; 
       white-space: nowrap;
     }
 
     .stat-item {
       font-size: 13px; 
       color: #000000; 
-      font-weight: 400; /* SIN NEGRITA */
+      font-weight: 400; 
       text-transform: uppercase;
       padding: 0 15px;
       border-right: 1px solid #ddd;
